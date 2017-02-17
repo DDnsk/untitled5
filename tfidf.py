@@ -4,32 +4,32 @@ import nltk
 from nltk.corpus import stopwords
 from collections import Counter
 from nltk.stem.porter import *
-def get_tokens(text):
+def get_tokens(text): #分词
     lowers=text.lower()
     tokens=lowers.split(' ')
     return tokens
-def stem_tokens(tokens, stemmer):
+def stem_tokens(tokens, stemmer): #按照相同词根归并
     stemmed = []
     for item in tokens:
         stemmed.append(stemmer.stem(item))
     return stemmed
-def tf(word, count):
+def tf(word, count): #计算tf
     return count[word]
-def n_containing(word, count_list):
+def n_containing(word, count_list): #计算包含某词的句子数
     return sum(1 for count in count_list if word in count)
-def idf(word, count_list):
+def idf(word, count_list): #计算idf
     return math.log10(len(count_list) / (n_containing(word, count_list)))
-def tfidf(word, count, count_list):
+def tfidf(word, count, count_list): #计算tf*idf
     return tf(word, count) * idf(word, count_list)
 f=open('C:\Users\swy\Desktop\miss.txt')
 fr=f.read()
 fr=fr.replace('\"','')
 fr=fr.replace('-','')
-fr=fr.replace('Mr. ','Mr,')
+fr=fr.replace('Mr. ','Mr,') #Mr.的“.”很容易与句号混淆，先去掉，随后再补充上
 fr=fr.replace('Mrs. ','Mrs,')
 fr=fr.replace('. ','.')
 fr=fr.replace('.\n','.')
-for i in('!','?','\n'):
+for i in('!','?','\n'): #将换行的符号全部替换成.用来分句
     fr=fr.replace(i,'.')
 u=range(1,1000)
 count=range(1,1000)
@@ -38,10 +38,10 @@ u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10],u[11],u[12],u[13],u[14],u[15]
 for i in range(1,47):
     u[i]=u[i].replace('Mr,','Mr.')
     u[i]=u[i].replace('Mrs,','Mrs.')
-    for j in (',','(',')',';'):
+    for j in (',','(',')',';'): #去掉逗号等分句时不会去掉的符号
         u[i]=u[i].replace(j,'')
     tokens=get_tokens(u[i])
-    filtered = [w for w in tokens if not w in stopwords.words('english')]
+    filtered = [w for w in tokens if not w in stopwords.words('english')] #去停用词
     stemmer = PorterStemmer()
     stemmed = stem_tokens(filtered, stemmer)
     count[i]=Counter(stemmed)
