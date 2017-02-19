@@ -1,10 +1,11 @@
+#coding=utf-8
 import math
 import string
 import nltk
 from nltk.corpus import stopwords
 from collections import Counter
 from nltk.stem.porter import *
-def get_tokens(text): #分词
+def get_tokens(text):  #分词
     lowers=text.lower()
     tokens=lowers.split(' ')
     return tokens
@@ -25,28 +26,30 @@ f=open('C:\Users\swy\Desktop\miss.txt')
 fr=f.read()
 fr=fr.replace('\"','')
 fr=fr.replace('-','')
-fr=fr.replace('Mr. ','Mr,') #Mr.的“.”很容易与句号混淆，先去掉，随后再补充上
+fr=fr.replace('Mr. ','Mr,') #Mr.的“.”很容易与巨好混淆，先去掉，随后再补充上
 fr=fr.replace('Mrs. ','Mrs,')
 fr=fr.replace('. ','.')
 fr=fr.replace('.\n','.')
-for i in('!','?','\n'): #将换行的符号全部替换成.用来分句
+for i in('!','?','\n'): #将换行的符号全部替换成“.”用来分句
     fr=fr.replace(i,'.')
+length = fr.count(".")
+print length
 u=range(1,1000)
 count=range(1,1000)
 final=range(1,1000)
-u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10],u[11],u[12],u[13],u[14],u[15],u[16],u[17],u[18],u[19],u[20],u[21],u[22],u[23],u[24],u[25],u[26],u[27],u[28],u[29],u[30],u[31],u[32],u[33],u[34],u[35],u[36],u[37],u[38],u[39],u[40],u[41],u[42],u[43],u[44],u[45],u[46]=fr.split('.',45)
-for i in range(1,47):
-    u[i]=u[i].replace('Mr,','Mr.')
+u[1:length]=fr.split('.',length-1)
+for i in range(1,length):
+    u[i]=u[i].replace('Mr,','Mr.') #去掉逗号等分句时不会去掉的符号
     u[i]=u[i].replace('Mrs,','Mrs.')
-    for j in (',','(',')',';'): #去掉逗号等分句时不会去掉的符号
-        u[i]=u[i].replace(j,'')
+    for j in (',','(',')',';'):
+        u[i]=u[i].replace(j,'') #去停用词
     tokens=get_tokens(u[i])
-    filtered = [w for w in tokens if not w in stopwords.words('english')] #去停用词
+    filtered = [w for w in tokens if not w in stopwords.words('english')]
     stemmer = PorterStemmer()
     stemmed = stem_tokens(filtered, stemmer)
     count[i]=Counter(stemmed)
     print count[i]
-countlist=[count[j] for j in range (1,47)]
-for i in range(1,47):
+countlist=[count[j] for j in range (1,length)]
+for i in range(1,length):
     final[i] = {word: tfidf(word, count[i], countlist)/math.sqrt(sum(tfidf(word,count[i],countlist)*tfidf(word,count[i],countlist) for word in count[i])) for word in count[i]}
     print final[i]
